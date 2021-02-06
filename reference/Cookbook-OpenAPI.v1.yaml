@@ -23,7 +23,7 @@ paths:
       summary: GET
       tags: []
       operationId: get-recipes-ingredients
-      description: Retreive recipes that contain the specified ingredient.
+      description: Retreive the list of ingredients for a specific recipe.
       parameters:
         - schema:
             type: string
@@ -58,22 +58,6 @@ paths:
             application/json:
               schema:
                 type: object
-                properties:
-                  name:
-                    type: string
-                    description: The name of the recipe.
-                    example: Banana and yoghurt
-                  calories:
-                    type: integer
-                    description: The total calories. Each recipe represents 1 serving.
-                    example: 100
-                  description:
-                    type: string
-                    description: Max 160 character (including spaces)
-                    example: 'Delicious, creamy sweet treat.'
-                    maxLength: 160
-                  '':
-                    type: string
   /recipes:
     get:
       summary: GET endpoint
@@ -82,6 +66,61 @@ paths:
       responses:
         '200':
           description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  name:
+                    type: string
+                    example: Banana and yoghurt parfait
+                    maxLength: 50
+                    description: Unique descriptive title for the recipe.
+                  description:
+                    type: string
+                    description: Short paragraph summarising the recipe.
+                    maxLength: 160
+                    example: A simple delicious creamy treat with a hint of cinnamon.
+                  photo:
+                    type: string
+                  calories:
+                    type: number
+                    example: 100
+                    readOnly: true
+                  preparation time:
+                    type: number
+                    readOnly: true
+                  type:
+                    type: string
+                    enum:
+                      - vegan
+                      - vegetarian
+                      - unknown
+                    example: vegan
+                    default: unknown
+              examples:
+                Banana and yoghurt parfait:
+                  value:
+                    name: string
+                    description: string
+                    photo: string
+                    calories: 100
+                    preparation time: 0
+                    type: vegan
+        '404':
+          description: Resource not found.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  Message:
+                    type: string
+                    example: Resource not found.
+              examples:
+                Recipe not found:
+                  value:
+                    Message: Recipe not found.
       operationId: get-recipes
       parameters:
         - schema:
@@ -92,12 +131,11 @@ paths:
           name: calories
           description: 'Range of calories from min to max. '
         - schema:
-            type: array
-            example:
-              - '[0,60]'
+            type: integer
+            example: 60
           in: query
           name: time
-          description: Preparation time range in mins from minimum to maximum.
+          description: Max. preparation time in minutes.
         - schema:
             type: string
             example: Banana and yoghurt parfait
@@ -106,18 +144,52 @@ paths:
           name: name
           description: Unique descriptive title for the recipe. Max. 50 characters. Search can include grep patterns.
         - schema:
-            type: integer
-            format: int64
-            example: 1
+            type: string
           in: query
-          name: id
-          description: Unique identifier.
+          name: ingredient
       description: |-
-        Search for recipes based on name, ingredients, calories or preparation time. Returns a recipe summary that includes an image, name and description. 
+        Search for recipes based on {name}, {ingredient}, {calories} or preparation {time}. Returns a recipe summary that includes an image, name and description. 
 
-        If no query parameter is set a list of all recipes will be returned sorted by recipe id. All stated string lengths are inlusive of spaces.
+        If no query parameter is set a list of all recipes (paginated) will be returned sorted by recipe id. All stated string lengths are inlusive of spaces.
     parameters: []
+  '/recipes/{id}/preparation':
+    parameters:
+      - schema:
+          type: string
+        name: id
+        in: path
+        required: true
+    get:
+      summary: Your GET endpoint
+      tags: []
+      responses:
+        '200':
+          description: OK
+      operationId: get-recipes-id-methods
+      description: Retrieve the methods for a specific recipe.
+  '/recipes/{recipeId}':
+    parameters:
+      - $ref: '#/components/parameters/recipeId'
+    get:
+      summary: Your GET endpoint
+      tags: []
+      responses:
+        '200':
+          description: OK
+      operationId: get-recipes-id
+      description: TO DO
 components:
   schemas: {}
+  parameters:
+    recipeId:
+      name: recipeId
+      in: path
+      required: true
+      schema:
+        type: integer
+        minimum: 0
+        format: int64
+        example: 0
+      description: Unique identifier.
 tags:
   - name: recipes
