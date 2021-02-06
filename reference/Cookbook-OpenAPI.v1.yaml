@@ -1,0 +1,123 @@
+openapi: 3.0.0
+info:
+  title: Cookbook-OpenAPI
+  version: '1.0'
+  contact:
+    name: Chef
+    url: low_calory_cookbook.com
+    email: colory_master@gmail.com
+  license:
+    name: GNU General Public License v3.0
+  description: Retrieve low-calory recipes.
+servers:
+  - url: 'http://localhost:3000'
+paths:
+  '/recipes/{id}/ingredients':
+    parameters:
+      - schema:
+          type: string
+        name: id
+        in: path
+        required: true
+    get:
+      summary: GET
+      tags: []
+      operationId: get-recipes-ingredients
+      description: Retreive recipes that contain the specified ingredient.
+      parameters:
+        - schema:
+            type: string
+            example: banana
+          in: query
+          name: item
+          description: The ingredient that you want in your recipe. Not case sensitive.
+          required: true
+        - schema:
+            type: string
+            enum:
+              - metric
+              - imperial
+            default: metric
+          in: query
+          name: units
+          description: 'Display the units as **metric** or **imperial**. Default: ''metric'''
+        - schema:
+            type: string
+            default: weight
+            enum:
+              - weight
+              - volume
+          in: query
+          name: amount
+          description: 'Display the amount of ingredient needed as a **weight** (e.g. grams/ounces) or as a **volume** measured in cups and spoons. Default: ''weight'' '
+      responses:
+        '200':
+          description: OK
+          headers: {}
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  name:
+                    type: string
+                    description: The name of the recipe.
+                    example: Banana and yoghurt
+                  calories:
+                    type: integer
+                    description: The total calories. Each recipe represents 1 serving.
+                    example: 100
+                  description:
+                    type: string
+                    description: Max 160 character (including spaces)
+                    example: 'Delicious, creamy sweet treat.'
+                    maxLength: 160
+                  '':
+                    type: string
+  /recipes:
+    get:
+      summary: GET endpoint
+      tags:
+        - recipes
+      responses:
+        '200':
+          description: OK
+      operationId: get-recipes
+      parameters:
+        - schema:
+            type: array
+            example:
+              - '[0,200]'
+          in: query
+          name: calories
+          description: 'Range of calories from min to max. '
+        - schema:
+            type: array
+            example:
+              - '[0,60]'
+          in: query
+          name: time
+          description: Preparation time range in mins from minimum to maximum.
+        - schema:
+            type: string
+            example: Banana and yoghurt parfait
+            maxLength: 50
+          in: query
+          name: name
+          description: Unique descriptive title for the recipe. Max. 50 characters. Search can include grep patterns.
+        - schema:
+            type: integer
+            format: int64
+            example: 1
+          in: query
+          name: id
+          description: Unique identifier.
+      description: |-
+        Search for recipes based on name, ingredients, calories or preparation time. Returns a recipe summary that includes an image, name and description. 
+
+        If no query parameter is set a list of all recipes will be returned sorted by recipe id. All stated string lengths are inlusive of spaces.
+    parameters: []
+components:
+  schemas: {}
+tags:
+  - name: recipes
