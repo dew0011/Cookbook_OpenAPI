@@ -12,13 +12,9 @@ info:
 servers:
   - url: 'http://localhost:3000'
 paths:
-  '/recipes/{id}/ingredients':
+  '/recipes/{recipeId}/ingredients':
     parameters:
-      - schema:
-          type: string
-        name: id
-        in: path
-        required: true
+      - $ref: '#/components/parameters/recipeId'
     get:
       summary: GET
       tags: []
@@ -27,20 +23,13 @@ paths:
       parameters:
         - schema:
             type: string
-            example: banana
-          in: query
-          name: item
-          description: The ingredient that you want in your recipe. Not case sensitive.
-          required: true
-        - schema:
-            type: string
             enum:
               - metric
               - imperial
             default: metric
           in: query
           name: units
-          description: 'Display the units as **metric** or **imperial**. Default: ''metric'''
+          description: 'If **weight** is chosen, display the units as **metric** or **imperial**. '
         - schema:
             type: string
             default: weight
@@ -49,15 +38,18 @@ paths:
               - volume
           in: query
           name: amount
-          description: 'Display the amount of ingredient needed as a **weight** (e.g. grams/ounces) or as a **volume** measured in cups and spoons. Default: ''weight'' '
+          description: Display the amount of ingredient needed as a **weight** (e.g. grams/ounces) or as a **volume** measured in cups and spoons. Note that ingredients that do not conform to these categories will be presented in a customised manner e.g. a pinch of salt.
       responses:
         '200':
-          description: OK
-          headers: {}
+          description: The length of the ingredient array will vary depending on the number of ingredients in the recipe.
           content:
             application/json:
               schema:
-                type: object
+                type: array
+                items:
+                  $ref: '#/components/schemas/Ingredient'
+        '404':
+          $ref: '#/components/responses/404'
   /recipes:
     get:
       summary: GET endpoint
@@ -101,22 +93,24 @@ paths:
           name: type
           description: 'Tag defining a subset of recipes by cuisine or diet. For a full list of tags see: www.some-link-to-tags.com'
       description: |-
-        Search for recipes based on {name}, {ingredient}, {calories} or preparation {time}. Returns a recipe summary that includes an image, name, description, the total calories and preparation time. 
+        Search for recipes based on {name}, {ingredient}, {calories} or preparation {time}.
 
         If no query parameter is set a list of all recipes (paginated) will be returned sorted by recipe id.
       responses:
         '200':
-          $ref: '#/components/responses/200-summary'
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/recipeSummary'
+          description: 'Returns a list of recipes that match the search query. The summary includes a name, photo, description, the total calories and preparation time. '
         '404':
           $ref: '#/components/responses/404'
     parameters: []
-  '/recipes/{id}/preparation':
+  '/recipes/{recipeId}/preparation':
     parameters:
-      - schema:
-          type: string
-        name: id
-        in: path
-        required: true
+      - $ref: '#/components/parameters/recipeId'
     get:
       summary: Your GET endpoint
       tags: []
@@ -133,11 +127,76 @@ paths:
       tags: []
       responses:
         '200':
-          description: OK
+          $ref: '#/components/responses/200-summary'
+        '404':
+          $ref: '#/components/responses/404'
       operationId: get-recipes-id
       description: 'Retrieve the summary for a specific recipe. Returns a name, image, description, the total calories and preparation time. '
 components:
-  schemas: {}
+  schemas:
+    Ingredient:
+      title: Ingredient
+      type: object
+      properties:
+        positionId:
+          type: integer
+          description: The position of the ingredient in the list.
+          format: int64
+        productID:
+          type: string
+          description: The unique identifier of the product. This links to the Product API.
+          example: MILK
+        amount:
+          type: integer
+          example: 50
+          description: 'Amount of the product needed. Default: metric (grams)'
+      x-examples: {}
+    recipeSummary:
+      title: recipeSummary
+      type: object
+      properties:
+        recipeId:
+          type: integer
+          description: Unique recipe identifier.
+          example: 0
+          format: int64
+          minimum: 0
+        name:
+          description: Title of the recipe.
+          example: Banana and yoghurt parfait
+          type: string
+        photo:
+          type: string
+          description: Image of the prepared recipe.
+          format: image/*
+        description:
+          type: string
+          description: Short paragraph describing the recipe.
+          example: Delicious creamy sweet treat with a hint of cinnamon.
+        type:
+          type: string
+          description: Any diet or cuisine sub-categories the recipe is assigned to.
+          example: vegan
+          enum:
+            - vegan
+            - vegetarian
+        calories:
+          type: string
+          description: The total calories.
+          example: '100'
+        time:
+          type: string
+          description: The estimated preparation time in minutes.
+          example: '2'
+      x-examples:
+        Banana and yoghurt parfait:
+          recipeId: 0
+          name: Banana and yoghurt parfait
+          photo: string
+          description: Delicious creamy sweet treat with a hint of cinnamon.
+          type: vegan
+          calories: '100'
+          time: '2'
   parameters:
     recipeId:
       name: recipeId
@@ -148,7 +207,7 @@ components:
         minimum: 0
         format: int64
         example: 0
-      description: Unique identifier.
+      description: Unique recipe identifier.
   responses:
     '404':
       description: Recipe not found.
@@ -171,10 +230,12 @@ components:
           schema:
             type: object
             properties:
-              id:
+              recipeId:
                 type: integer
                 description: Unique recipe identifier.
                 example: 0
+                format: int64
+                minimum: 0
               name:
                 description: Title of the recipe.
                 example: Banana and yoghurt parfait
@@ -202,10 +263,13 @@ components:
                 type: string
                 description: The estimated preparation time in minutes.
                 example: '2'
+            required:
+              - recipeId
+              - name
           examples:
             Banana and yoghurt parfait:
               value:
-                id: 0
+                recipeId: 0
                 name: Banana and yoghurt parfait
                 photo: string
                 description: Delicious creamy sweet treat with a hint of cinnamon.
