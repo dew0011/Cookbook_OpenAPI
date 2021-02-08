@@ -63,64 +63,6 @@ paths:
       summary: GET endpoint
       tags:
         - recipes
-      responses:
-        '200':
-          description: OK
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  name:
-                    type: string
-                    example: Banana and yoghurt parfait
-                    maxLength: 50
-                    description: Unique descriptive title for the recipe.
-                  description:
-                    type: string
-                    description: Short paragraph summarising the recipe.
-                    maxLength: 160
-                    example: A simple delicious creamy treat with a hint of cinnamon.
-                  photo:
-                    type: string
-                  calories:
-                    type: number
-                    example: 100
-                    readOnly: true
-                  preparation time:
-                    type: number
-                    readOnly: true
-                  type:
-                    type: string
-                    enum:
-                      - vegan
-                      - vegetarian
-                      - unknown
-                    example: vegan
-                    default: unknown
-              examples:
-                Banana and yoghurt parfait:
-                  value:
-                    name: string
-                    description: string
-                    photo: string
-                    calories: 100
-                    preparation time: 0
-                    type: vegan
-        '404':
-          description: Resource not found.
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  Message:
-                    type: string
-                    example: Resource not found.
-              examples:
-                Recipe not found:
-                  value:
-                    Message: Recipe not found.
       operationId: get-recipes
       parameters:
         - schema:
@@ -142,15 +84,31 @@ paths:
             maxLength: 50
           in: query
           name: name
-          description: Unique descriptive title for the recipe. Max. 50 characters. Search can include grep patterns.
+          description: Search for word/s present in the recipe title. Separate multiple search terms with commas. Search can include grep patterns.
         - schema:
             type: string
           in: query
           name: ingredient
+          description: 'Search for a recipe with a specific ingredient. Separate multiple search terms with commas. Search can include grep patterns. '
+        - schema:
+            type: string
+            enum:
+              - vegan
+              - mediterranean
+              - vegetarian
+            example: vegan
+          in: query
+          name: type
+          description: 'Tag defining a subset of recipes by cuisine or diet. For a full list of tags see: www.some-link-to-tags.com'
       description: |-
-        Search for recipes based on {name}, {ingredient}, {calories} or preparation {time}. Returns a recipe summary that includes an image, name and description. 
+        Search for recipes based on {name}, {ingredient}, {calories} or preparation {time}. Returns a recipe summary that includes an image, name, description, the total calories and preparation time. 
 
-        If no query parameter is set a list of all recipes (paginated) will be returned sorted by recipe id. All stated string lengths are inlusive of spaces.
+        If no query parameter is set a list of all recipes (paginated) will be returned sorted by recipe id.
+      responses:
+        '200':
+          $ref: '#/components/responses/200-summary'
+        '404':
+          $ref: '#/components/responses/404'
     parameters: []
   '/recipes/{id}/preparation':
     parameters:
@@ -177,7 +135,7 @@ paths:
         '200':
           description: OK
       operationId: get-recipes-id
-      description: TO DO
+      description: 'Retrieve the summary for a specific recipe. Returns a name, image, description, the total calories and preparation time. '
 components:
   schemas: {}
   parameters:
@@ -191,5 +149,69 @@ components:
         format: int64
         example: 0
       description: Unique identifier.
+  responses:
+    '404':
+      description: Recipe not found.
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+                example: Recipe not found
+          examples:
+            Recipe not found:
+              value:
+                message: Recipe not found
+    200-summary:
+      description: Example response
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              id:
+                type: integer
+                description: Unique recipe identifier.
+                example: 0
+              name:
+                description: Title of the recipe.
+                example: Banana and yoghurt parfait
+                type: string
+              photo:
+                type: string
+                description: Image of the prepared recipe.
+                format: image/*
+              description:
+                type: string
+                description: Short paragraph describing the recipe.
+                example: Delicious creamy sweet treat with a hint of cinnamon.
+              type:
+                type: string
+                description: Any diet or cuisine sub-categories the recipe is assigned to.
+                example: vegan
+                enum:
+                  - vegan
+                  - vegetarian
+              calories:
+                type: string
+                description: The total calories.
+                example: '100'
+              time:
+                type: string
+                description: The estimated preparation time in minutes.
+                example: '2'
+          examples:
+            Banana and yoghurt parfait:
+              value:
+                id: 0
+                name: Banana and yoghurt parfait
+                photo: string
+                description: Delicious creamy sweet treat with a hint of cinnamon.
+                type: vegan
+                calories: '100'
+                time: '2'
+  examples: {}
 tags:
   - name: recipes
