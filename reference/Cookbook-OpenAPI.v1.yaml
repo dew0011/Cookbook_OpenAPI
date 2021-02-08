@@ -18,41 +18,52 @@ paths:
     get:
       summary: GET
       tags: []
-      operationId: get-recipes-ingredients
+      operationId: get-recipes-recipeId-ingredients
       description: Retreive the list of ingredients for a specific recipe.
-      parameters:
-        - schema:
-            type: string
-            enum:
-              - metric
-              - imperial
-            default: metric
-          in: query
-          name: units
-          description: 'If **weight** is chosen, display the units as **metric** or **imperial**. '
-        - schema:
-            type: string
-            default: weight
-            enum:
-              - weight
-              - volume
-          in: query
-          name: amount
-          description: Display the amount of ingredient needed as a **weight** (e.g. grams/ounces) or as a **volume** measured in cups and spoons. Note that ingredients that do not conform to these categories will be presented in a customised manner e.g. a pinch of salt.
+      parameters: []
       responses:
         '200':
-          description: The length of the ingredient array will vary depending on the number of ingredients in the recipe.
+          description: Returns an array of ingredients.
           content:
             application/json:
               schema:
                 type: array
                 items:
                   $ref: '#/components/schemas/Ingredient'
+              examples:
+                Banana parfait ingredients:
+                  value:
+                    - positionId: 0
+                      productID: BANANA
+                      amount: 50
+                      unit: grams
+                    - positionId: 1
+                      productID: GRKYOG
+                      amount: 50
+                      unit: grams
+                    - positionId: 2
+                      productID: CINNA
+                      amount: 1
+                      unit: pinch
         '404':
           $ref: '#/components/responses/404'
+    put:
+      summary: PUT update of recipe ingredients
+      operationId: put-recipes-recipeId-ingredients
+      responses:
+        '200':
+          description: Recipe successfully updated.
+        '400':
+          $ref: '#/components/responses/400'
+        '404':
+          $ref: '#/components/responses/404'
+      description: |-
+        Update the ingredients of a specific recipe. 
+
+        **Warning**: The content of the request body overwrites all existing ingredients for the recipe. Please make sure all ingredients, including those wihtout changes, are included in the request body.
   /recipes:
     get:
-      summary: GET endpoint
+      summary: GET recipes based on a search query
       tags:
         - recipes
       operationId: get-recipes
@@ -104,6 +115,16 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/recipeSummary'
+              examples:
+                Banana parfait:
+                  value:
+                    - recipeId: 0
+                      name: Banana and yoghurt parfait
+                      photo: string
+                      description: Delicious creamy sweet treat with a hint of cinnamon.
+                      type: vegan
+                      calories: '100'
+                      time: '2'
           description: 'Returns a list of recipes that match the search query. The summary includes a name, photo, description, the total calories and preparation time. '
         '404':
           $ref: '#/components/responses/404'
@@ -112,31 +133,158 @@ paths:
     parameters:
       - $ref: '#/components/parameters/recipeId'
     get:
-      summary: Your GET endpoint
+      summary: GET recipe methods
       tags: []
       responses:
         '200':
-          description: OK
-      operationId: get-recipes-id-methods
+          description: Returns an array of recipe steps.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Step'
+              examples:
+                Banana and yoghurt parfait:
+                  value:
+                    - positionId: 0
+                      message: Chop the banana into thin slices.
+                    - positionId: 1
+                      message: Place in a small bowl with the yoghurt.
+                    - positionId: 2
+                      message: Sprinkle with cinnamon.
+        '404':
+          $ref: '#/components/responses/404'
+      operationId: get-recipes-recipeid-preparation
       description: Retrieve the methods for a specific recipe.
+    put:
+      tags: []
+      summary: Put update to recipe methods
+      operationId: put-recipes-recipeId-preparation
+      responses:
+        '200':
+          description: Recipe successfully updated.
+        '400':
+          $ref: '#/components/responses/400'
+        '404':
+          $ref: '#/components/responses/404'
+      description: |-
+        Update the methods of a specific recipe. 
+
+        **Warning**: The content of the request body overwrites all existing methods for the recipe. Please make sure all steps, including those wihtout changes, are included in the request body.
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Step'
+            examples:
+              Banana parfait:
+                value:
+                  - positionId: 0
+                    message: Chop the banana into thin slices.
+                  - positionId: 1
+                    message: Layer half in small bowl and cover with half of the yoghurt.
+                  - positionId: 2
+                    message: Repeat with remaining banana and yoghurt.
+                  - positionId: 3
+                    message: Sprinkle with cinnamon.
   '/recipes/{recipeId}':
     parameters:
       - $ref: '#/components/parameters/recipeId'
     get:
-      summary: Your GET endpoint
+      summary: GET recipe summary
       tags: []
       responses:
         '200':
-          $ref: '#/components/responses/200-summary'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/recipeSummary'
+              examples:
+                Banana and yoghurt parfait:
+                  value:
+                    recipeId: 0
+                    name: Banana and yoghurt parfait
+                    photo: string
+                    description: Delicious creamy sweet treat with a hint of cinnamon.
+                    type: vegan
+                    calories: '100'
+                    time: '2'
+          description: Example response.
         '404':
           $ref: '#/components/responses/404'
-      operationId: get-recipes-id
+      operationId: get-recipes-recipeid
       description: 'Retrieve the summary for a specific recipe. Returns a name, image, description, the total calories and preparation time. '
+    delete:
+      tags: []
+      summary: DELETE recipe
+      operationId: delete-recipes-recipeId
+      responses:
+        '200':
+          description: Recipe deleted.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  Message:
+                    type: string
+                    example: Recipe was succesfully deleted.
+              examples:
+                Recipe deleted:
+                  value:
+                    Message: Recipe was succesfully deleted.
+        '404':
+          $ref: '#/components/responses/404'
+      description: |-
+        Entirely remove a specific recipe from the API.
+
+        **Warning**: This operation cannot be undone.
+    put:
+      tags: []
+      summary: PUT update to recipe summary
+      operationId: put-recipes-recipeId
+      responses:
+        '200':
+          description: Recipe successfully updated.
+        '400':
+          $ref: '#/components/responses/400'
+        '404':
+          $ref: '#/components/responses/404'
+        '415':
+          description: Unsupported media type
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    description: ''
+                    example: 'Unsupported media type. Please ensure the path to the image is correct and that it is a .png, .jpeg or .svg file.'
+              examples:
+                Unsupported media type:
+                  value:
+                    message: 'Unsupported media type. Please ensure the path to the image is correct and that it is a .png, .jpeg or .svg file.'
+      description: 'Update the recipe summary. All key and value pairs must be supplied for the update to be successful. '
+      parameters: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/recipeSummary'
+        description: 'Format needed to update the summry information. '
 components:
   schemas:
     Ingredient:
       title: Ingredient
       type: object
+      x-examples:
+        Milk:
+          positionId: 0
+          productID: MILK
+          amount: 50
+          unit: mL
       properties:
         positionId:
           type: integer
@@ -147,13 +295,31 @@ components:
           description: The unique identifier of the product. This links to the Product API.
           example: MILK
         amount:
-          type: integer
+          type: number
           example: 50
-          description: 'Amount of the product needed. Default: metric (grams)'
-      x-examples: {}
+          description: Amount of the product needed.
+        unit:
+          type: string
+          description: The unit of measurement.
+          enum:
+            - pinch
+            - cup
+            - gram
+            - grams
+            - mL
+          example: mL
     recipeSummary:
       title: recipeSummary
       type: object
+      x-examples:
+        Banana and yoghurt parfait:
+          recipeId: 0
+          name: Banana and yoghurt parfait
+          photo: string
+          description: Delicious creamy sweet treat with a hint of cinnamon.
+          type: vegan
+          calories: '100'
+          time: '2'
       properties:
         recipeId:
           type: integer
@@ -166,9 +332,9 @@ components:
           example: Banana and yoghurt parfait
           type: string
         photo:
-          type: string
-          description: Image of the prepared recipe.
+          description: 'Path to the current location of an image of the prepared recipe. File types: .png, .jpeg or .svg'
           format: image/*
+          type: string
         description:
           type: string
           description: Short paragraph describing the recipe.
@@ -188,15 +354,29 @@ components:
           type: string
           description: The estimated preparation time in minutes.
           example: '2'
+    Step:
+      title: Step
+      type: object
+      properties:
+        positionId:
+          type: integer
+          description: The position of the step in the instruction list.
+          example: 0
+        message:
+          type: string
+          description: The instruction for the recipe.
+          example: Spread the avocado onto the cracker.
       x-examples:
-        Banana and yoghurt parfait:
-          recipeId: 0
-          name: Banana and yoghurt parfait
-          photo: string
-          description: Delicious creamy sweet treat with a hint of cinnamon.
-          type: vegan
-          calories: '100'
-          time: '2'
+        Breakfast stack:
+          positionId: 0
+          message: Spread the avocado onto the cracker.
+        Banana parfait:
+          - positionId: 0
+            message: Chop the banana into thin slices.
+          - positionId: 1
+            message: Place in a small bowl with the yoghurt.
+          - positionId: 2
+            message: Sprinkle with cinnamon.
   parameters:
     recipeId:
       name: recipeId
@@ -209,6 +389,20 @@ components:
         example: 0
       description: Unique recipe identifier.
   responses:
+    '400':
+      description: Bad Request
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+                example: Bad Request
+          examples:
+            Bad Request:
+              value:
+                message: Bad Request
     '404':
       description: Recipe not found.
       content:
@@ -223,59 +417,6 @@ components:
             Recipe not found:
               value:
                 message: Recipe not found
-    200-summary:
-      description: Example response
-      content:
-        application/json:
-          schema:
-            type: object
-            properties:
-              recipeId:
-                type: integer
-                description: Unique recipe identifier.
-                example: 0
-                format: int64
-                minimum: 0
-              name:
-                description: Title of the recipe.
-                example: Banana and yoghurt parfait
-                type: string
-              photo:
-                type: string
-                description: Image of the prepared recipe.
-                format: image/*
-              description:
-                type: string
-                description: Short paragraph describing the recipe.
-                example: Delicious creamy sweet treat with a hint of cinnamon.
-              type:
-                type: string
-                description: Any diet or cuisine sub-categories the recipe is assigned to.
-                example: vegan
-                enum:
-                  - vegan
-                  - vegetarian
-              calories:
-                type: string
-                description: The total calories.
-                example: '100'
-              time:
-                type: string
-                description: The estimated preparation time in minutes.
-                example: '2'
-            required:
-              - recipeId
-              - name
-          examples:
-            Banana and yoghurt parfait:
-              value:
-                recipeId: 0
-                name: Banana and yoghurt parfait
-                photo: string
-                description: Delicious creamy sweet treat with a hint of cinnamon.
-                type: vegan
-                calories: '100'
-                time: '2'
   examples: {}
 tags:
   - name: recipes
