@@ -17,7 +17,7 @@ paths:
     parameters:
       - $ref: '#/components/parameters/recipeId'
     get:
-      summary: GET
+      summary: GET ingredients
       tags:
         - get
       operationId: get-recipes-recipeId-ingredients
@@ -38,7 +38,7 @@ paths:
     put:
       tags:
         - put
-      summary: PUT update of recipe ingredients
+      summary: PUT update of ingredients
       operationId: put-recipes-recipeId-ingredients
       responses:
         '200':
@@ -53,7 +53,7 @@ paths:
         **Warning**: The content of the request body overwrites all existing ingredients for the recipe. Please make sure all ingredients, including those wihtout changes, are included in the request body.
   /recipes:
     get:
-      summary: GET recipes based on a search query
+      summary: GET recipes
       tags:
         - get
       operationId: get-recipes
@@ -174,7 +174,7 @@ paths:
     parameters:
       - $ref: '#/components/parameters/recipeId'
     get:
-      summary: GET recipe methods
+      summary: GET preparation steps
       tags:
         - get
       responses:
@@ -202,7 +202,7 @@ paths:
     put:
       tags:
         - put
-      summary: Put update to recipe methods
+      summary: Put update of preparation steps
       operationId: put-recipes-recipeId-preparation
       responses:
         '200':
@@ -291,7 +291,7 @@ paths:
     put:
       tags:
         - put
-      summary: PUT update to recipe summary
+      summary: PUT update of recipe summary
       operationId: put-recipes-recipeId
       responses:
         '200':
@@ -337,7 +337,7 @@ paths:
     put:
       tags:
         - put
-      summary: PUT update to product
+      summary: PUT update of individual product
       operationId: put-recipes-recipeId-ingredients-productId
       responses:
         '200':
@@ -396,7 +396,7 @@ paths:
       - $ref: '#/components/parameters/recipeId'
       - $ref: '#/components/parameters/order'
     put:
-      summary: PUT update to preparation step
+      summary: PUT update of individual step
       operationId: put-recipes-recipeId-preparation-stepId
       responses:
         '200':
@@ -430,7 +430,7 @@ paths:
     delete:
       tags:
         - delete
-      summary: DELETE preparation step
+      summary: DELETE individual step
       operationId: delete-recipes-recipeId-preparation-stepId
       responses:
         '200':
