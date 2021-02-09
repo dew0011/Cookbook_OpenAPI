@@ -30,23 +30,9 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/Ingredient'
-              examples:
-                Banana parfait ingredients:
-                  value:
-                    - positionId: 0
-                      productID: BANANA
-                      amount: 50
-                      unit: grams
-                    - positionId: 1
-                      productID: GRKYOG
-                      amount: 50
-                      unit: grams
-                    - positionId: 2
-                      productID: CINNA
-                      amount: 1
-                      unit: pinch
+              examples: {}
         '404':
-          $ref: '#/components/responses/404'
+          $ref: '#/components/responses/404Recipe'
     put:
       tags: []
       summary: PUT update of recipe ingredients
@@ -57,7 +43,7 @@ paths:
         '400':
           $ref: '#/components/responses/400'
         '404':
-          $ref: '#/components/responses/404'
+          $ref: '#/components/responses/404Recipe'
       description: |-
         Update the ingredients of a specific recipe. 
 
@@ -124,22 +110,14 @@ paths:
                       photo: 'http://photo/location'
                       description: Delicious creamy sweet treat with a hint of cinnamon.
                       type: vegan
-                      calories: '100'
+                      calories: 100
                       time: '2'
-                example-2:
-                  value:
-                    - recipeId: 0
-                      name: Banana and yoghurt parfait
-                      photo: 'http://example.com'
-                      description: Delicious creamy sweet treat with a hint of cinnamon.
-                      type: vegan
-                      calories: '100'
-                      preparationTime: 2
           description: 'Returns a list of recipes that match the search query. The summary includes a name, photo, description, the total calories and preparation time. '
         '404':
-          $ref: '#/components/responses/404'
+          $ref: '#/components/responses/404Recipe'
     parameters: []
     post:
+      tags: []
       summary: POST a new recipe
       operationId: post-recipes
       responses:
@@ -151,7 +129,7 @@ paths:
                 type: object
                 properties:
                   recipeId:
-                    $ref: '#/components/schemas/recipeId'
+                    $ref: '#/components/schemas/RecipeId'
                   message:
                     type: string
                     example: Success! This is the ID of your new recipe.
@@ -170,9 +148,22 @@ paths:
         content:
           application/json:
             schema:
-              type: array
-              items:
-                $ref: '#/components/schemas/RecipeSummary'
+              type: object
+              properties:
+                recipeName:
+                  $ref: '#/components/schemas/RecipeName'
+                photo:
+                  $ref: '#/components/schemas/Photo'
+                description:
+                  $ref: '#/components/schemas/Description'
+                diet:
+                  $ref: '#/components/schemas/Diet'
+                calories:
+                  $ref: '#/components/schemas/Calories'
+                preparationTime:
+                  $ref: '#/components/schemas/PreparationTime'
+              required:
+                - recipeName
   '/recipes/{recipeId}/preparation':
     parameters:
       - $ref: '#/components/parameters/recipeId'
@@ -198,7 +189,7 @@ paths:
                     - order: 2
                       instruction: Sprinkle with cinnamon.
         '404':
-          $ref: '#/components/responses/404'
+          $ref: '#/components/responses/404Recipe'
       operationId: get-recipes-recipeid-preparation
       description: Retrieve the methods for a specific recipe.
     put:
@@ -211,7 +202,7 @@ paths:
         '400':
           $ref: '#/components/responses/400'
         '404':
-          $ref: '#/components/responses/404'
+          $ref: '#/components/responses/404Recipe'
       description: |-
         Update the entire methods section of a specific recipe. Use this to add methods to a new recipe without any pre-existing methods. To update individual steps separately please see: PUT /recipes/{recipeId}/preparation/{stepId}
 
@@ -255,11 +246,11 @@ paths:
                     photo: 'http://photo/location'
                     description: Delicious creamy sweet treat with a hint of cinnamon.
                     type: vegan
-                    calories: '100'
+                    calories: 100
                     time: '2'
-          description: Example response.
+          description: Returns a single recipe summary.
         '404':
-          $ref: '#/components/responses/404'
+          $ref: '#/components/responses/404Recipe'
       operationId: get-recipes-recipeid
       description: 'Retrieve the summary for a specific recipe. '
     delete:
@@ -282,9 +273,9 @@ paths:
                   value:
                     Message: Recipe was succesfully deleted.
         '404':
-          $ref: '#/components/responses/404'
+          $ref: '#/components/responses/404Recipe'
       description: |-
-        Entirely remove a specific recipe from the API.
+        Entirely remove a specific recipe from the API. 
 
         **Warning**: This operation cannot be undone.
     put:
@@ -293,11 +284,18 @@ paths:
       operationId: put-recipes-recipeId
       responses:
         '200':
-          description: Recipe successfully updated.
+          description: |-
+            Recipe successfully updated.
+
+            The full summary is returned so the changes can be viewed in context.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RecipeSummary'
         '400':
           $ref: '#/components/responses/400'
         '404':
-          $ref: '#/components/responses/404'
+          $ref: '#/components/responses/404Recipe'
         '415':
           description: Unsupported media type
           content:
@@ -321,51 +319,78 @@ paths:
             schema:
               $ref: '#/components/schemas/RecipeSummary'
         description: 'Format needed to update the summry information. '
-  '/recipes/{recipeId}/ingredients/{productId}':
+  '/recipes/{recipeId}/ingredients/{order}':
     parameters:
-      - schema:
-          type: string
-        name: recipeId
-        in: path
-        required: true
-      - schema:
-          type: string
-        name: productId
-        in: path
-        required: true
+      - $ref: '#/components/parameters/recipeId'
+      - $ref: '#/components/parameters/order'
     put:
-      summary: ''
+      tags: []
+      summary: PUT update to product
       operationId: put-recipes-recipeId-ingredients-productId
       responses:
         '200':
-          description: OK
+          description: |-
+            Recipe successfully updated.
+
+            The full ingredient list is returned so the changes can be viewed in context.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Ingredient'
+              examples: {}
+        '400':
+          $ref: '#/components/responses/400'
+        '404':
+          $ref: '#/components/responses/404Recipe'
+      description: |-
+        Updates a single product in the ingredients list of a specific recipe based on its ordinal position.
+
+        If many changes to multiple products are needed or to change the order of ingredients please use: PUT /recipes/{recipeId}/ingredients.
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Product'
+        description: 'Full details on the products and data available in the Ingredients API can be found here: https://ingredients-API-URl.com'
     delete:
-      summary: ''
+      tags: []
+      summary: DELETE product
       operationId: delete-recipes-recipeId-ingredients-productId
       responses:
         '200':
-          description: OK
-  '/recipes/{recipeId}/preparation/{stepId}':
+          description: |-
+            Product deleted.
+
+            The full ingredient list is returned so the changes can be viewed in context.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Ingredient'
+        '400':
+          $ref: '#/components/responses/400'
+        '404':
+          $ref: '#/components/responses/404Recipe'
+      description: |-
+        Deletes a single product from the ingredients list based on its ordinal position. 
+
+        **Warning**: This operation cannot be undone. This may update the `order` of other ingredients, please take care if performing consecutive operations on this endpoint.
+  '/recipes/{recipeId}/preparation/{order}':
     parameters:
       - $ref: '#/components/parameters/recipeId'
-      - schema:
-          type: integer
-          format: int64
-          minimum: 1
-          example: 3
-        name: stepId
-        in: path
-        required: true
-        description: Ordinal number of a step within a recipe.
+      - $ref: '#/components/parameters/order'
     put:
-      summary: PUT update to individual step
+      summary: PUT update to preparation step
       operationId: put-recipes-recipeId-preparation-stepId
       responses:
         '200':
           description: |-
             Recipe succesfully updated.
 
-            All steps of the recipe are returned.
+            All steps of the recipe are returned so the updated step can be viewed in context.
           content:
             application/json:
               schema:
@@ -373,95 +398,72 @@ paths:
         '400':
           $ref: '#/components/responses/400'
         '404':
-          $ref: '#/components/responses/404'
+          $ref: '#/components/responses/404RecipeStep'
       description: |-
-        Updates a single step in the methods of a specific recipe. 
+        Updates a single preparation step in a specific recipe based on its ordinal position. 
 
-        The stepId indicates the step to choose based on its ordinal position. 
-
-        **Warning** stepId may be updated following a PUT request. Take care when updating more than one step in a recipe. If many edits are needed consider PUT /recipes/{recipeId}/preparation to replace the entire methods section at once.
+        If many changes to multiple steps are needed or to change the order of steps please use: PUT /recipes/{recipeId}/preparation.
+      tags:
+        - recipes
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Instruction'
+            examples:
+              Step 3:
+                value: Spread the avocado onto the cracker.
+        description: 'It is recommended that the string is in plain text. Markdown is not explicitly supported and may not display as expected. '
     delete:
-      summary: ''
+      tags: []
+      summary: DELETE preparation step
       operationId: delete-recipes-recipeId-preparation-stepId
       responses:
         '200':
-          description: OK
+          description: |-
+            Step deleted.
+
+            All steps of the recipe are returned so the remaining steps can be viewed in context.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Preparation'
+              examples: {}
+        '400':
+          $ref: '#/components/responses/400'
+        '404':
+          $ref: '#/components/responses/404RecipeStep'
+      description: |-
+        Deletes a single preparation step based on its ordinal position. 
+
+        **Warning**: This operation cannot be undone. This may update the `order` of other steps, please take care if performing consecutive operations on this endpoint.
 components:
   schemas:
-    Ingredient:
-      title: Ingredient
-      type: object
-      x-examples:
-        Milk:
-          positionId: 0
-          productID: MILK
-          amount: 50
-          unit: mL
-      properties:
-        order:
-          $ref: '#/components/schemas/Order'
-        productID:
-          type: string
-          description: The unique identifier of the product. This links to the Product API.
-          example: MILK
-        amount:
-          type: number
-          example: 50
-          description: Amount of the product needed.
-        unit:
-          type: string
-          description: The unit of measurement.
-          enum:
-            - pinch
-            - cup
-            - gram
-            - grams
-            - mL
-          example: mL
     RecipeSummary:
       title: RecipeSummary
       type: object
       x-examples:
-        Banana and yoghurt parfait:
-          recipeId: 0
-          name: Banana and yoghurt parfait
-          photo: string
+        example-1:
+          recipeName: Banana parfait
+          photo: 'http://photo-location'
           description: Delicious creamy sweet treat with a hint of cinnamon.
-          type: vegan
-          calories: '100'
-          time: '2'
+          diet: classic
+          calories: 100
+          preparationTime: 2
       description: ''
       properties:
-        name:
-          description: Title of the recipe.
-          example: Banana and yoghurt parfait
-          type: string
+        recipeName:
+          $ref: '#/components/schemas/RecipeName'
         photo:
-          type: string
-          description: 'Path to the current location of an image of the prepared recipe. File types: .png, .jpeg or .svg'
-          format: uri
+          $ref: '#/components/schemas/Photo'
         description:
-          type: string
-          description: Short paragraph describing the recipe.
-          example: Delicious creamy sweet treat with a hint of cinnamon.
-        type:
-          type: string
-          description: Any diet or cuisine sub-categories the recipe is assigned to.
-          example: vegan
-          enum:
-            - vegan
-            - vegetarian
+          $ref: '#/components/schemas/Description'
+        diet:
+          $ref: '#/components/schemas/Diet'
         calories:
-          type: string
-          description: The total calories.
-          example: '100'
+          $ref: '#/components/schemas/Calories'
         preparationTime:
-          type: integer
-          description: The estimated preparation time in minutes.
-          example: 2
-          minimum: 1
-      required:
-        - name
+          $ref: '#/components/schemas/PreparationTime'
     Step:
       title: Step
       type: object
@@ -473,22 +475,19 @@ components:
         order:
           $ref: '#/components/schemas/Order'
         instruction:
-          type: string
-          description: The instruction for the recipe.
-          example: Spread the avocado onto the cracker.
+          $ref: '#/components/schemas/Instruction'
     Order:
       type: integer
       title: Order
-      description: 'The position within the list. Within the API, ordinal numbers are scaled to leave spaces for updating the order with PUT methods.'
+      description: 'The position within the list. Within the API, ordinal numbers are scaled to leave spaces for updating the order with PUT and DELETE methods.'
       x-examples:
-        Order:
-          id: 0
+        Order: 1
       format: int64
       minimum: 0
       example: 1
-    recipeId:
+    RecipeId:
       type: integer
-      title: recipeId
+      title: RecipeId
       format: int64
       description: Unique recipe identifier.
       example: 136
@@ -517,6 +516,106 @@ components:
             $ref: '#/components/schemas/Step'
           step3:
             $ref: '#/components/schemas/Step'
+    Instruction:
+      type: string
+      title: Instruction
+      example: Spread the avocado onto the cracker.
+      description: The instruction for the recipe.
+      x-examples:
+        Step 1: Spread the avocado onto the cracker.
+    productId:
+      type: string
+      title: productId
+      description: 'ProductId that corresponds with the Ingredients API: https://ingredients-API-URl.com. A product must be registered in the Ingredients API before it can be used in a recipe.'
+      example: MILK
+    Product:
+      title: Product
+      type: object
+      properties:
+        productId:
+          $ref: '#/components/schemas/productId'
+        amount:
+          $ref: '#/components/schemas/Amount'
+        units:
+          $ref: '#/components/schemas/Units'
+      required:
+        - productId
+        - amount
+        - units
+      x-examples: {}
+    Amount:
+      type: number
+      description: Amount of the product needed.
+      minimum: 0
+      example: 50
+      x-examples: {}
+    Units:
+      title: Units
+      description: The unit of measurement.
+      example: mL
+      enum:
+        - mL
+        - g
+        - kg
+        - cup
+        - tbsp
+        - tsp
+        - pinch
+        - L
+      x-examples: {}
+      type: string
+    Ingredient:
+      title: Ingredient
+      type: object
+      properties:
+        order:
+          $ref: '#/components/schemas/Order'
+        productId:
+          $ref: '#/components/schemas/productId'
+        amount:
+          $ref: '#/components/schemas/Amount'
+        units:
+          $ref: '#/components/schemas/Units'
+    RecipeName:
+      type: string
+      title: RecipeName
+      example: Banana parfait
+      description: Name of the recipe.
+      x-examples: {}
+      maxLength: 50
+    Photo:
+      type: string
+      title: Photo
+      description: 'Path to the current location of an image of the prepared recipe. File types: .png, .jpeg or .svg'
+      format: uri
+      example: 'http://photo-location'
+    Description:
+      type: string
+      title: Description
+      description: Short paragraph describing the recipe.
+      example: Delicious creamy sweet treat with a hint of cinnamon.
+      maxLength: 250
+    Diet:
+      type: string
+      title: Diet
+      description: Any diet or cuisine sub-categories the recipe is assigned to.
+      enum:
+        - vegan
+        - vegetarian
+        - classic
+      example: classic
+      x-examples: {}
+    Calories:
+      title: Calories
+      description: The total calories.
+      example: 100
+      type: number
+    PreparationTime:
+      type: number
+      title: PreparationTime
+      description: The estimated preparation time in minutes.
+      example: 2
+      minimum: 1
   parameters:
     recipeId:
       name: recipeId
@@ -526,8 +625,18 @@ components:
         type: integer
         minimum: 0
         format: int64
-        example: 0
+        example: 136
       description: Unique recipe identifier.
+    order:
+      name: order
+      in: path
+      required: true
+      schema:
+        type: integer
+        format: int64
+        minimum: 0
+        example: 3
+      description: Ordinal position of item in list.
   responses:
     '400':
       description: Bad Request
@@ -543,8 +652,8 @@ components:
             Bad Request:
               value:
                 message: Bad Request
-    '404':
-      description: Recipe not found.
+    404RecipeStep:
+      description: Not found.
       content:
         application/json:
           schema:
@@ -552,9 +661,28 @@ components:
             properties:
               message:
                 type: string
-                example: Recipe not found
+                example: Step not found
           examples:
             Recipe not found:
               value:
                 message: Recipe not found
+            Step not found:
+              value:
+                message: Step not found
+    404Recipe:
+      description: Not found.
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              id:
+                type: string
+                example: Recipe not found
+          examples:
+            Recipe not found:
+              value:
+                id: Recipe not found
   examples: {}
+tags:
+  - name: recipes
