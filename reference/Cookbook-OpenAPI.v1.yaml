@@ -4,11 +4,12 @@ info:
   version: '1.0'
   contact:
     name: Chef
-    url: low_calory_cookbook.com
-    email: colory_master@gmail.com
+    url: low_calory_cookbook/contact.com
+    email: calory_master@gmail.com
   license:
     name: GNU General Public License v3.0
   description: Retrieve low-calory recipes.
+  termsOfService: low_calory_cookbook.com
 servers:
   - url: 'http://localhost:3000'
 paths:
@@ -17,7 +18,9 @@ paths:
       - $ref: '#/components/parameters/recipeId'
     get:
       summary: GET
-      tags: []
+      tags:
+        - get
+        - recipes
       operationId: get-recipes-recipeId-ingredients
       description: Retreive the list of ingredients for a specific recipe.
       parameters: []
@@ -34,7 +37,9 @@ paths:
         '404':
           $ref: '#/components/responses/404Recipe'
     put:
-      tags: []
+      tags:
+        - put
+        - recipes
       summary: PUT update of recipe ingredients
       operationId: put-recipes-recipeId-ingredients
       responses:
@@ -53,6 +58,7 @@ paths:
       summary: GET recipes based on a search query
       tags:
         - recipes
+        - get
       operationId: get-recipes
       parameters:
         - schema:
@@ -117,7 +123,9 @@ paths:
           $ref: '#/components/responses/404Recipe'
     parameters: []
     post:
-      tags: []
+      tags:
+        - recipes
+        - put
       summary: POST a new recipe
       operationId: post-recipes
       responses:
@@ -169,7 +177,9 @@ paths:
       - $ref: '#/components/parameters/recipeId'
     get:
       summary: GET recipe methods
-      tags: []
+      tags:
+        - get
+        - recipes
       responses:
         '200':
           description: Returns an array of recipe steps.
@@ -193,7 +203,9 @@ paths:
       operationId: get-recipes-recipeid-preparation
       description: Retrieve the methods for a specific recipe.
     put:
-      tags: []
+      tags:
+        - recipes
+        - put
       summary: Put update to recipe methods
       operationId: put-recipes-recipeId-preparation
       responses:
@@ -231,7 +243,9 @@ paths:
       - $ref: '#/components/parameters/recipeId'
     get:
       summary: GET recipe summary
-      tags: []
+      tags:
+        - recipes
+        - get
       responses:
         '200':
           content:
@@ -254,7 +268,9 @@ paths:
       operationId: get-recipes-recipeid
       description: 'Retrieve the summary for a specific recipe. '
     delete:
-      tags: []
+      tags:
+        - recipes
+        - delete
       summary: DELETE recipe
       operationId: delete-recipes-recipeId
       responses:
@@ -279,7 +295,9 @@ paths:
 
         **Warning**: This operation cannot be undone.
     put:
-      tags: []
+      tags:
+        - recipes
+        - put
       summary: PUT update to recipe summary
       operationId: put-recipes-recipeId
       responses:
@@ -324,7 +342,9 @@ paths:
       - $ref: '#/components/parameters/recipeId'
       - $ref: '#/components/parameters/order'
     put:
-      tags: []
+      tags:
+        - recipes
+        - put
       summary: PUT update to product
       operationId: put-recipes-recipeId-ingredients-productId
       responses:
@@ -355,7 +375,9 @@ paths:
               $ref: '#/components/schemas/Product'
         description: 'Full details on the products and data available in the Ingredients API can be found here: https://ingredients-API-URl.com'
     delete:
-      tags: []
+      tags:
+        - recipes
+        - delete
       summary: DELETE product
       operationId: delete-recipes-recipeId-ingredients-productId
       responses:
@@ -405,6 +427,7 @@ paths:
         If many changes to multiple steps are needed or to change the order of steps please use: PUT /recipes/{recipeId}/preparation.
       tags:
         - recipes
+        - put
       requestBody:
         content:
           application/json:
@@ -415,7 +438,9 @@ paths:
                 value: Spread the avocado onto the cracker.
         description: 'It is recommended that the string is in plain text. Markdown is not explicitly supported and may not display as expected. '
     delete:
-      tags: []
+      tags:
+        - recipes
+        - delete
       summary: DELETE preparation step
       operationId: delete-recipes-recipeId-preparation-stepId
       responses:
@@ -686,3 +711,6 @@ components:
   examples: {}
 tags:
   - name: recipes
+  - name: get
+  - name: put
+  - name: delete
