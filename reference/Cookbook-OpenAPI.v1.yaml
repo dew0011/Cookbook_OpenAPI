@@ -60,8 +60,13 @@ paths:
       parameters:
         - schema:
             type: array
+            items:
+              type: integer
+              format: int64
+            minItems: 0
             example:
-              - '[0,200]'
+              - 1
+              - 200
           in: query
           name: calories
           description: 'Range of calories from min to max. '
@@ -93,10 +98,7 @@ paths:
           in: query
           name: type
           description: 'Tag defining a subset of recipes by cuisine or diet. For a full list of tags see: www.some-link-to-tags.com'
-      description: |-
-        Search for recipes based on {name}, {ingredient}, {calories} or preparation {time}.
-
-        If no query parameter is set a list of all recipes (paginated) will be returned sorted by recipe id.
+      description: Search for recipes. If no query parameter is set a list of all recipes (paginated) will be returned sorted by recipe id.
       responses:
         '200':
           content:
@@ -120,8 +122,6 @@ paths:
           $ref: '#/components/responses/404Recipe'
     parameters: []
     post:
-      tags:
-        - put
       summary: POST a new recipe
       operationId: post-recipes
       responses:
@@ -168,6 +168,8 @@ paths:
                   $ref: '#/components/schemas/PreparationTime'
               required:
                 - recipeName
+      tags:
+        - post
   '/recipes/{recipeId}/preparation':
     parameters:
       - $ref: '#/components/parameters/recipeId'
@@ -700,3 +702,4 @@ tags:
   - name: get
   - name: put
   - name: delete
+  - name: post
