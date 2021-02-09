@@ -20,7 +20,6 @@ paths:
       summary: GET
       tags:
         - get
-        - recipes
       operationId: get-recipes-recipeId-ingredients
       description: Retreive the list of ingredients for a specific recipe.
       parameters: []
@@ -39,7 +38,6 @@ paths:
     put:
       tags:
         - put
-        - recipes
       summary: PUT update of recipe ingredients
       operationId: put-recipes-recipeId-ingredients
       responses:
@@ -57,7 +55,6 @@ paths:
     get:
       summary: GET recipes based on a search query
       tags:
-        - recipes
         - get
       operationId: get-recipes
       parameters:
@@ -124,7 +121,6 @@ paths:
     parameters: []
     post:
       tags:
-        - recipes
         - put
       summary: POST a new recipe
       operationId: post-recipes
@@ -179,7 +175,6 @@ paths:
       summary: GET recipe methods
       tags:
         - get
-        - recipes
       responses:
         '200':
           description: Returns an array of recipe steps.
@@ -204,7 +199,6 @@ paths:
       description: Retrieve the methods for a specific recipe.
     put:
       tags:
-        - recipes
         - put
       summary: Put update to recipe methods
       operationId: put-recipes-recipeId-preparation
@@ -244,7 +238,6 @@ paths:
     get:
       summary: GET recipe summary
       tags:
-        - recipes
         - get
       responses:
         '200':
@@ -269,7 +262,6 @@ paths:
       description: 'Retrieve the summary for a specific recipe. '
     delete:
       tags:
-        - recipes
         - delete
       summary: DELETE recipe
       operationId: delete-recipes-recipeId
@@ -296,7 +288,6 @@ paths:
         **Warning**: This operation cannot be undone.
     put:
       tags:
-        - recipes
         - put
       summary: PUT update to recipe summary
       operationId: put-recipes-recipeId
@@ -343,7 +334,6 @@ paths:
       - $ref: '#/components/parameters/order'
     put:
       tags:
-        - recipes
         - put
       summary: PUT update to product
       operationId: put-recipes-recipeId-ingredients-productId
@@ -376,7 +366,6 @@ paths:
         description: 'Full details on the products and data available in the Ingredients API can be found here: https://ingredients-API-URl.com'
     delete:
       tags:
-        - recipes
         - delete
       summary: DELETE product
       operationId: delete-recipes-recipeId-ingredients-productId
@@ -426,7 +415,6 @@ paths:
 
         If many changes to multiple steps are needed or to change the order of steps please use: PUT /recipes/{recipeId}/preparation.
       tags:
-        - recipes
         - put
       requestBody:
         content:
@@ -439,7 +427,6 @@ paths:
         description: 'It is recommended that the string is in plain text. Markdown is not explicitly supported and may not display as expected. '
     delete:
       tags:
-        - recipes
         - delete
       summary: DELETE preparation step
       operationId: delete-recipes-recipeId-preparation-stepId
@@ -710,7 +697,6 @@ components:
                 id: Recipe not found
   examples: {}
 tags:
-  - name: recipes
   - name: get
   - name: put
   - name: delete
