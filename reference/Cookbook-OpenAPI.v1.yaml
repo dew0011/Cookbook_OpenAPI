@@ -31,14 +31,14 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/Ingredient'
+                  $ref: '#/components/schemas/IngredientList'
               examples: {}
         '404':
           $ref: '#/components/responses/404Recipe'
     put:
       tags:
         - put
-      summary: PUT update of ingredients
+      summary: PUT ingredient list update
       operationId: put-recipes-recipeId-ingredients
       responses:
         '200':
@@ -51,6 +51,7 @@ paths:
         Update the ingredients of a specific recipe. 
 
         **Warning**: The content of the request body overwrites all existing ingredients for the recipe. Please make sure all ingredients, including those wihtout changes, are included in the request body.
+      parameters: []
   /recipes:
     get:
       summary: GET recipes
@@ -321,14 +322,12 @@ paths:
             schema:
               $ref: '#/components/schemas/RecipeSummary'
         description: 'Format needed to update the summry information. '
-  '/recipes/{recipeId}/ingredients/{order}':
+  '/recipes/{recipeId}/ingredients/{ingredientId}':
     parameters:
       - $ref: '#/components/parameters/recipeId'
-      - $ref: '#/components/parameters/order'
+      - $ref: '#/components/parameters/ingredientId'
     put:
-      tags:
-        - put
-      summary: PUT update of individual product
+      summary: PUT ingredient update
       operationId: put-recipes-recipeId-ingredients-productId
       responses:
         '200':
@@ -341,22 +340,32 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/Ingredient'
-              examples: {}
+                  $ref: '#/components/schemas/IngredientList'
         '400':
           $ref: '#/components/responses/400'
         '404':
           $ref: '#/components/responses/404Recipe'
       description: |-
-        Updates a single product in the ingredients list of a specific recipe based on its ordinal position.
+        Updates a single product in the ingredients list of a specific recipe.
 
-        If many changes to multiple products are needed or to change the order of ingredients please use: PUT /recipes/{recipeId}/ingredients.
+        If many changes to multiple products please consider using: PUT /recipes/{recipeId}/ingredients.
+
+        **Warning**: This may update the `order` of other ingredients, please take care if performing consecutive operations on this endpoint.
+      tags:
+        - put
       requestBody:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/Product'
-        description: 'Full details on the products and data available in the Ingredients API can be found here: https://ingredients-API-URl.com'
+              $ref: '#/components/schemas/Ingredient'
+            examples:
+              Milk:
+                value:
+                  productId: MILK
+                  amount: 50
+                  units: mL
+                  order: 1
+        description: 'Full details on the products and data available in the Ingredients API can be found here: https://ingredients-API-URl.com. A productId must be present in the Ingredients API before it can be used in a recipe.'
     delete:
       tags:
         - delete
@@ -373,13 +382,13 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/Ingredient'
+                  $ref: '#/components/schemas/IngredientList'
         '400':
           $ref: '#/components/responses/400'
         '404':
           $ref: '#/components/responses/404Recipe'
       description: |-
-        Deletes a single product from the ingredients list based on its ordinal position. 
+        Deletes a single product from the ingredients list. 
 
         **Warning**: This operation cannot be undone. This may update the `order` of other ingredients, please take care if performing consecutive operations on this endpoint.
 components:
@@ -434,26 +443,33 @@ components:
         Empty html string: <!-- All methods removed -->
       example: <ol> 1. Slice the banana <br> 2. Layer the banana into the bowl <br> 3. Add a the yoghurt <br> 4. Sprinkle with cinnamon</ol>
       minLength: 0
-    productId:
+    ProductId:
       type: string
-      title: productId
-      description: 'ProductId that corresponds with the Ingredients API: https://ingredients-API-URl.com. A product must be registered in the Ingredients API before it can be used in a recipe.'
+      title: ProductId
+      description: 'ProductId that corresponds with the Ingredients API: https://ingredients-API-URl.com.'
       example: MILK
-    Product:
-      title: Product
+    Ingredient:
+      title: Ingredient
       type: object
+      x-examples:
+        Milk:
+          productId: MILK
+          amount: 50
+          units: mL
+          order: 1
       properties:
         productId:
-          $ref: '#/components/schemas/productId'
+          $ref: '#/components/schemas/ProductId'
         amount:
           $ref: '#/components/schemas/Amount'
         units:
           $ref: '#/components/schemas/Units'
+        order:
+          $ref: '#/components/schemas/Order'
       required:
         - productId
         - amount
         - units
-      x-examples: {}
     Amount:
       type: number
       description: Amount of the product needed.
@@ -475,18 +491,24 @@ components:
         - L
       x-examples: {}
       type: string
-    Ingredient:
-      title: Ingredient
+    IngredientList:
+      title: IngredientList
       type: object
+      x-examples: {}
       properties:
         order:
           $ref: '#/components/schemas/Order'
         productId:
-          $ref: '#/components/schemas/productId'
+          $ref: '#/components/schemas/ProductId'
         amount:
           $ref: '#/components/schemas/Amount'
         units:
           $ref: '#/components/schemas/Units'
+        ingredientId:
+          type: integer
+          example: 3
+          minimum: 0
+          description: Unique identifier of the ingredient.
     RecipeName:
       type: string
       title: RecipeName
@@ -538,8 +560,8 @@ components:
         format: int64
         example: 136
       description: Unique recipe identifier.
-    order:
-      name: order
+    ingredientId:
+      name: ingredientId
       in: path
       required: true
       schema:
@@ -547,7 +569,7 @@ components:
         format: int64
         minimum: 0
         example: 3
-      description: Ordinal position of item in list.
+      description: Unique identifier of the ingredient.
   responses:
     '204':
       description: 'There is no content in this section. '
