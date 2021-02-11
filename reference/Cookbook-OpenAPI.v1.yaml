@@ -179,65 +179,52 @@ paths:
         - get
       responses:
         '200':
-          description: Returns an array of recipe steps.
+          description: 'Returns the preparation steps in html format. '
           content:
-            application/json:
+            text/html:
               schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/Step'
-              examples:
-                Banana and yoghurt parfait:
-                  value:
-                    - order: 0
-                      instruction: Chop the banana into thin slices.
-                    - order: 1
-                      instruction: Place in a small bowl with the yoghurt.
-                    - order: 2
-                      instruction: Sprinkle with cinnamon.
-            application/xml:
-              schema:
-                type: object
-                properties: {}
+                $ref: '#/components/schemas/Preparation'
+          headers: {}
+        '204':
+          $ref: '#/components/responses/204'
         '404':
           $ref: '#/components/responses/404Recipe'
       operationId: get-recipes-recipeid-preparation
-      description: Retrieve the methods for a specific recipe.
+      description: Retrieve the preparation steps for a specific recipe.
     put:
       tags:
         - put
-      summary: Put update of preparation steps
+      summary: PUT preparation steps update
       operationId: put-recipes-recipeId-preparation
       responses:
         '200':
           description: Recipe successfully updated.
+        '204':
+          $ref: '#/components/responses/204'
         '400':
           $ref: '#/components/responses/400'
         '404':
           $ref: '#/components/responses/404Recipe'
       description: |-
-        Update the entire methods section of a specific recipe. Use this to add methods to a new recipe without any pre-existing methods. To update individual steps separately please see: PUT /recipes/{recipeId}/preparation/{stepId}
+        Update the preparation steps for a specific recipe. 
 
-        **Warning**: The content of the request body overwrites all existing methods for the recipe. Please make sure all steps, including those wihtout changes, are included in the request body.
+        **Warning**: The content of the request body overwrites the existing preparation steps for the recipe. Please make sure the entire preparation steps are included, even sections where edits were not made.
       requestBody:
         content:
-          application/json:
+          text/html:
             schema:
-              type: array
-              items:
-                $ref: '#/components/schemas/Step'
+              $ref: '#/components/schemas/Preparation'
             examples:
               Banana parfait:
-                value:
-                  - order: 0
-                    instruction: Chop the banana into thin slices.
-                  - order: 1
-                    instruction: Layer half in small bowl and cover with half of the yoghurt.
-                  - order: 2
-                    instruction: Repeat with remaining banana and yoghurt.
-                  - order: 3
-                    instruction: Sprinkle with cinnamon.
-        description: An array of steps to perform.
+                value: <ol> 1. Slice the banana <br> 2. Layer the banana into the bowl <br> 3. Add a the yoghurt <br> 4. Sprinkle with cinnamon</ol>
+              Methods removed:
+                value: <!-- All methods removed -->
+        description: |-
+          For consistency and to aid in rendering the text in your application we recommend that the text contains an ordered list, descending from 1. Please see <preparation.example> for further details on the suggested formatting.
+
+
+          Note: To delete all existing steps you may upload an empty html string. We recommend leaving commented out string noting this change.
+      parameters: []
   '/recipes/{recipeId}':
     parameters:
       - $ref: '#/components/parameters/recipeId'
@@ -395,66 +382,6 @@ paths:
         Deletes a single product from the ingredients list based on its ordinal position. 
 
         **Warning**: This operation cannot be undone. This may update the `order` of other ingredients, please take care if performing consecutive operations on this endpoint.
-  '/recipes/{recipeId}/preparation/{order}':
-    parameters:
-      - $ref: '#/components/parameters/recipeId'
-      - $ref: '#/components/parameters/order'
-    put:
-      summary: PUT update of individual step
-      operationId: put-recipes-recipeId-preparation-stepId
-      responses:
-        '200':
-          description: |-
-            Recipe succesfully updated.
-
-            All steps of the recipe are returned so the updated step can be viewed in context.
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Preparation'
-        '400':
-          $ref: '#/components/responses/400'
-        '404':
-          $ref: '#/components/responses/404RecipeStep'
-      description: |-
-        Updates a single preparation step in a specific recipe based on its ordinal position. 
-
-        If many changes to multiple steps are needed or to change the order of steps please use: PUT /recipes/{recipeId}/preparation.
-      tags:
-        - put
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/Instruction'
-            examples:
-              Step 3:
-                value: Spread the avocado onto the cracker.
-        description: 'It is recommended that the string is in plain text. Markdown is not explicitly supported and may not display as expected. '
-    delete:
-      tags:
-        - delete
-      summary: DELETE individual step
-      operationId: delete-recipes-recipeId-preparation-stepId
-      responses:
-        '200':
-          description: |-
-            Step deleted.
-
-            All steps of the recipe are returned so the remaining steps can be viewed in context.
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Preparation'
-              examples: {}
-        '400':
-          $ref: '#/components/responses/400'
-        '404':
-          $ref: '#/components/responses/404RecipeStep'
-      description: |-
-        Deletes a single preparation step based on its ordinal position. 
-
-        **Warning**: This operation cannot be undone. This may update the `order` of other steps, please take care if performing consecutive operations on this endpoint.
 components:
   schemas:
     RecipeSummary:
@@ -482,18 +409,6 @@ components:
           $ref: '#/components/schemas/Calories'
         preparationTime:
           $ref: '#/components/schemas/PreparationTime'
-    Step:
-      title: Step
-      type: object
-      x-examples:
-        example-1:
-          order: 1
-          instruction: Spread the avocado onto the cracker.
-      properties:
-        order:
-          $ref: '#/components/schemas/Order'
-        instruction:
-          $ref: '#/components/schemas/Instruction'
     Order:
       type: integer
       title: Order
@@ -511,36 +426,14 @@ components:
       example: 136
       minimum: 0
     Preparation:
-      title: Preparation
-      type: array
-      description: Example of a recipe with three steps.
-      x-examples:
-        example-1:
-          - step1:
-              order: 1
-              instruction: Spread the avocado onto the cracker.
-            step2:
-              order: 1
-              instruction: Spread the avocado onto the cracker.
-            step3:
-              order: 1
-              instruction: Spread the avocado onto the cracker.
-      items:
-        type: object
-        properties:
-          step1:
-            $ref: '#/components/schemas/Step'
-          step2:
-            $ref: '#/components/schemas/Step'
-          step3:
-            $ref: '#/components/schemas/Step'
-    Instruction:
       type: string
-      title: Instruction
-      example: Spread the avocado onto the cracker.
-      description: The instruction for the recipe.
+      title: Preparation
+      description: The preparation steps in html format.
       x-examples:
-        Step 1: Spread the avocado onto the cracker.
+        Banana parfait preparation: <ol> 1. Slice the banana <br> 2. Layer the banana into the bowl <br> 3. Add a the yoghurt <br> 4. Sprinkle with cinnamon</ol>
+        Empty html string: <!-- All methods removed -->
+      example: <ol> 1. Slice the banana <br> 2. Layer the banana into the bowl <br> 3. Add a the yoghurt <br> 4. Sprinkle with cinnamon</ol>
+      minLength: 0
     productId:
       type: string
       title: productId
@@ -656,6 +549,20 @@ components:
         example: 3
       description: Ordinal position of item in list.
   responses:
+    '204':
+      description: 'There is no content in this section. '
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+                example: No content
+          examples:
+            Example:
+              value:
+                message: No content
     '400':
       description: Bad Request
       content:
@@ -694,7 +601,7 @@ components:
           schema:
             type: object
             properties:
-              id:
+              message:
                 type: string
                 example: Recipe not found
           examples:
