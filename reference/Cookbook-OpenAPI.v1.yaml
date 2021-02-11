@@ -9,14 +9,16 @@ info:
   license:
     name: GNU General Public License v3.0
   description: |-
-    A mini API to store and manage recipes the smart way for integration into your application. Recipe meta data, preparation steps and ingredients are accessed separately, optimising load times and display flexibility. 
+    A mini API to store and manage recipes for integration into your application. Recipe meta data, preparation steps and ingredients are accessed separately, optimising load times and display flexibility. 
 
-    ### Features
+    ### Main Functionality
 
-    - Ingredient lists can be ordered to showcase promotional products. 
-    - Calory information can be automatically calculated behind the scenes from our Ingredients mini API.
-    - Preparation steps are formatted with html, allowing full customisation of display and content 
-    - OR utilise some of our pre-built html recipe templates. 
+    `recipes`: Create a recipe or search the database or modify existing recipes
+
+    `recipes/{recipeId}/preparation`: Fully customise the display and content of the preparation steps in html - list, blog, pictorial cues, the choice is yours. (See <preparation.example> for details on the suggested formatting and for our pre-built html templates.)
+     
+    `recipes/{recipeId}/ingredients`: Build an ingredients list that automatically calculates calories behind the scenes. Order the products in the list to showcase promotional products. 
+     
   termsOfService: awesome_cookbook.com
 servers:
   - url: 'http://localhost:3000'
@@ -25,9 +27,7 @@ paths:
     parameters:
       - $ref: '#/components/parameters/recipeId'
     get:
-      summary: GET ingredients
-      tags:
-        - get
+      summary: GET ingredient list
       operationId: get-recipes-recipeId-ingredients
       description: Retreive the list of ingredients for a specific recipe.
       parameters: []
@@ -43,9 +43,9 @@ paths:
               examples: {}
         '404':
           $ref: '#/components/responses/404Recipe'
-    put:
       tags:
-        - put
+        - ingredients
+    put:
       summary: PUT ingredient list update
       operationId: put-recipes-recipeId-ingredients
       responses:
@@ -60,11 +60,11 @@ paths:
 
         **Warning**: The content of the request body overwrites all existing ingredients for the recipe. Please make sure all ingredients, including those wihtout changes, are included in the request body.
       parameters: []
+      tags:
+        - ingredients
   /recipes:
     get:
       summary: GET recipes
-      tags:
-        - get
       operationId: get-recipes
       parameters:
         - schema:
@@ -129,9 +129,11 @@ paths:
           description: 'Returns a list of recipes that match the search query. The summary includes a name, photo, description, the total calories and preparation time. '
         '404':
           $ref: '#/components/responses/404Recipe'
+      tags:
+        - recipes
     parameters: []
     post:
-      summary: POST a new recipe
+      summary: POST new recipe
       operationId: post-recipes
       responses:
         '200':
@@ -179,14 +181,12 @@ paths:
                 - recipeName
         description: 'Calories may be specified here or this information can be calculated from the ingredients list once created. '
       tags:
-        - post
+        - recipes
   '/recipes/{recipeId}/preparation':
     parameters:
       - $ref: '#/components/parameters/recipeId'
     get:
       summary: GET preparation steps
-      tags:
-        - get
       responses:
         '200':
           description: 'Returns the preparation steps in html format. '
@@ -201,9 +201,9 @@ paths:
           $ref: '#/components/responses/404Recipe'
       operationId: get-recipes-recipeid-preparation
       description: Retrieve the preparation steps for a specific recipe.
-    put:
       tags:
-        - put
+        - preparation
+    put:
       summary: PUT preparation steps update
       operationId: put-recipes-recipeId-preparation
       responses:
@@ -235,13 +235,13 @@ paths:
 
           Note: To delete all existing steps you may upload an empty html string. We recommend leaving commented out string noting this change.
       parameters: []
+      tags:
+        - preparation
   '/recipes/{recipeId}':
     parameters:
       - $ref: '#/components/parameters/recipeId'
     get:
       summary: GET recipe summary
-      tags:
-        - get
       responses:
         '200':
           content:
@@ -263,9 +263,9 @@ paths:
           $ref: '#/components/responses/404Recipe'
       operationId: get-recipes-recipeid
       description: 'Retrieve the summary for a specific recipe. '
-    delete:
       tags:
-        - delete
+        - recipes
+    delete:
       summary: DELETE recipe
       operationId: delete-recipes-recipeId
       responses:
@@ -289,10 +289,10 @@ paths:
         Entirely remove a specific recipe from the API. 
 
         **Warning**: This operation cannot be undone.
-    put:
       tags:
-        - put
-      summary: PUT update of recipe summary
+        - recipes
+    put:
+      summary: PUT recipe summary update
       operationId: put-recipes-recipeId
       responses:
         '200':
@@ -331,6 +331,8 @@ paths:
             schema:
               $ref: '#/components/schemas/RecipeSummary'
         description: 'Format needed to update the summry information. '
+      tags:
+        - recipes
   '/recipes/{recipeId}/ingredients/{ingredientId}':
     parameters:
       - $ref: '#/components/parameters/recipeId'
@@ -360,8 +362,6 @@ paths:
         If many changes to multiple products please consider using: PUT /recipes/{recipeId}/ingredients.
 
         **Warning**: This may update the `order` of other ingredients, please take care if performing consecutive operations on this endpoint.
-      tags:
-        - put
       requestBody:
         content:
           application/json:
@@ -375,9 +375,9 @@ paths:
                   units: mL
                   order: 1
         description: 'Full details on the products and data available in the Ingredients API can be found here: https://ingredients-API-URl.com. A productId must be present in the Ingredients API before it can be used in a recipe.'
-    delete:
       tags:
-        - delete
+        - ingredients
+    delete:
       summary: DELETE product
       operationId: delete-recipes-recipeId-ingredients-productId
       responses:
@@ -400,6 +400,8 @@ paths:
         Deletes a single product from the ingredients list. 
 
         **Warning**: This operation cannot be undone. This may update the `order` of other ingredients, please take care if performing consecutive operations on this endpoint.
+      tags:
+        - ingredients
     get:
       summary: GET ingredient
       operationId: get-recipes-recipeId-ingredients-ingredientId
@@ -416,7 +418,7 @@ paths:
           $ref: '#/components/responses/404Recipe'
       description: Retrieve a specific ingredient from the ingredients list.
       tags:
-        - get
+        - ingredients
 components:
   schemas:
     RecipeSummary:
@@ -658,7 +660,6 @@ components:
                 id: Recipe not found
   examples: {}
 tags:
-  - name: get
-  - name: put
-  - name: delete
-  - name: post
+  - name: recipes
+  - name: ingredients
+  - name: preparation
