@@ -4,12 +4,20 @@ info:
   version: '1.0'
   contact:
     name: Chef
-    url: low_calory_cookbook/contact.com
-    email: calory_master@gmail.com
+    url: awesome_cookbook/contact.com
+    email: cookbook_chef@gmail.com
   license:
     name: GNU General Public License v3.0
-  description: Retrieve low-calory recipes.
-  termsOfService: low_calory_cookbook.com
+  description: |-
+    A mini API to store and manage recipes the smart way for integration into your application. Recipe meta data, preparation steps and ingredients are accessed separately, optimising load times and display flexibility. 
+
+    ### Features
+
+    - Ingredient lists can be ordered to showcase promotional products. 
+    - Calory information can be automatically calculated behind the scenes from our Ingredients mini API.
+    - Preparation steps are formatted with html, allowing full customisation of display and content 
+    - OR utilise some of our pre-built html recipe templates. 
+  termsOfService: awesome_cookbook.com
 servers:
   - url: 'http://localhost:3000'
 paths:
@@ -48,7 +56,7 @@ paths:
         '404':
           $ref: '#/components/responses/404Recipe'
       description: |-
-        Update the ingredients of a specific recipe. 
+        Update the ingredients of a specific recipe. This can also be used to update the order of multiple products in the ingredients list at once. 
 
         **Warning**: The content of the request body overwrites all existing ingredients for the recipe. Please make sure all ingredients, including those wihtout changes, are included in the request body.
       parameters: []
@@ -169,6 +177,7 @@ paths:
                   $ref: '#/components/schemas/PreparationTime'
               required:
                 - recipeName
+        description: 'Calories may be specified here or this information can be calculated from the ingredients list once created. '
       tags:
         - post
   '/recipes/{recipeId}/preparation':
@@ -405,7 +414,9 @@ paths:
           $ref: '#/components/responses/400'
         '404':
           $ref: '#/components/responses/404Recipe'
-      description: Retrieve a specifc ingredient from the ingredients list.
+      description: Retrieve a specific ingredient from the ingredients list.
+      tags:
+        - get
 components:
   schemas:
     RecipeSummary:
