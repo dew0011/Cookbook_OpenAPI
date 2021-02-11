@@ -195,6 +195,10 @@ paths:
                       instruction: Place in a small bowl with the yoghurt.
                     - order: 2
                       instruction: Sprinkle with cinnamon.
+            application/xml:
+              schema:
+                type: object
+                properties: {}
         '404':
           $ref: '#/components/responses/404Recipe'
       operationId: get-recipes-recipeid-preparation
