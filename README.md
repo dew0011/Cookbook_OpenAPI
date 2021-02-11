@@ -15,7 +15,7 @@ If you are also exploring this space, please feel free to use this as a starting
 
 ## Design Principles
 ### Endpoint layout
-<!-- The cookbook_openAPI holds recipes that are broken into three broad resources: recipe (the summary or meta data of the recipe), preparation and ingredients. The premise is that this allows rapid loading of each section in the customers' applications, as they do not have to pull the whole recipe at once. This also permits more flexibility in how the data is displayed.  -->
+The cookbook_openAPI holds recipes that are broken into three broad resources: recipe (the summary or meta data of the recipe), preparation and ingredients. The premise is that this allows rapid loading of each section in the customers' applications, as they do not have to pull the whole recipe at once. This also permits more flexibility in how the data is displayed.
 
 Following this natural structure, the API endpoints have been tagged so that they are grouped together by resource in the rendered documentation. 
 
