@@ -391,6 +391,21 @@ paths:
         Deletes a single product from the ingredients list. 
 
         **Warning**: This operation cannot be undone. This may update the `order` of other ingredients, please take care if performing consecutive operations on this endpoint.
+    get:
+      summary: GET ingredient
+      operationId: get-recipes-recipeId-ingredients-ingredientId
+      responses:
+        '200':
+          description: Returns the ingredient.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Ingredient'
+        '400':
+          $ref: '#/components/responses/400'
+        '404':
+          $ref: '#/components/responses/404Recipe'
+      description: Retrieve a specifc ingredient from the ingredients list.
 components:
   schemas:
     RecipeSummary:
