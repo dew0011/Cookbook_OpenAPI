@@ -13,7 +13,7 @@ info:
 
     ### Main Functionality
 
-    `recipes`: Create a recipe or search the database or modify existing recipes
+    `recipes`: Create a recipe, search the database or modify existing recipes
 
     `recipes/{recipeId}/preparation`: Fully customise the display and content of the preparation steps in html - list, blog, pictorial cues, the choice is yours. (See <preparation.example> for details on the suggested formatting and for our pre-built html templates.)
      
