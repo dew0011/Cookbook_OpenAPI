@@ -18,6 +18,4 @@ Here is the example of the curl request.
 curl http://localhost:3000/recipes?ingredients='banana'
 ```
 
-Alternatively, you may navigate to the [endpoint documentation](../reference/Cookbook-OpenAPI.v1.yaml) and 'Try it out' in the GUI.
-
-
+Or try it out in Postman: [![Run in Postman](https://run.pstmn.io/button.svg)](https://app.getpostman.com/run-collection/28e76c71be48476b5a6b)
