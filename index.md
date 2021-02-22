@@ -1,37 +1,29 @@
-## Welcome to GitHub Pages
+#  Cookbook Open-API Specification
 
-You can use the [editor on GitHub](https://github.com/dew0011/Cookbook_OpenAPI/edit/gh-pages/index.md) to maintain and preview the content for your website in Markdown files.
+This mini-API gives you access to our database of recipes and lets you or your users create and curate your own collection. 
 
-Whenever you commit to this repository, GitHub Pages will run [Jekyll](https://jekyllrb.com/) to rebuild the pages in your site, from the content in your Markdown files.
+## The API has three main endpoints.
 
-### Markdown
+- [**/recipes**](recipes-page) to search the database or add new recipes
+- [**/recipes/ingredients**](ingredients-page) to access the ingredients of a recipe
+- [**/recipes/preparation**](preparation-page) to access the preparation steps of a recipe
 
-Markdown is a lightweight and easy-to-use syntax for styling your writing. It includes conventions for
+All of our endpoints can be tested in Postman: <br>
+[![Run in Postman](https://run.pstmn.io/button.svg)](https://app.getpostman.com/run-collection/28e76c71be48476b5a6b)
 
-```markdown
-Syntax highlighted code block
+## Getting started - Searching the database
 
-# Header 1
-## Header 2
-### Header 3
+If you are familiar with Postman or prefer using a GUI try out the below exercises in Postman: <br>
+[![Run in Postman](https://run.pstmn.io/button.svg)](https://app.getpostman.com/run-collection/28e76c71be48476b5a6b)
 
-- Bulleted
-- List
+Feeling hungry? Us too. For our first request, let's try searching the API for recipes that use yoghurt. We will use the **/recipes** endpoint.
 
-1. Numbered
-2. List
-
-**Bold** and _Italic_ and `Code` text
-
-[Link](url) and ![Image](src)
+```bash
+curl http://localhost:3000/recipes?ingredients='yoghurt'
+```
+Above we wrote 'yoghurt' but you can also spell this as 'yogurt'. We can use grep terms to return results for multiple spelling variants.
+```bash
+curl http://localhost:3000/recipes?ingredients='yog.*urt'
 ```
 
-For more details see [GitHub Flavored Markdown](https://guides.github.com/features/mastering-markdown/).
-
-### Jekyll Themes
-
-Your Pages site will use the layout and styles from the Jekyll theme you have selected in your [repository settings](https://github.com/dew0011/Cookbook_OpenAPI/settings). The name of this theme is saved in the Jekyll `_config.yml` configuration file.
-
-### Support or Contact
-
-Having trouble with Pages? Check out our [documentation](https://docs.github.com/categories/github-pages-basics/) or [contact support](https://support.github.com/contact) and we’ll help you sort it out.
+[Explore the API -> ](API-spec-page)
