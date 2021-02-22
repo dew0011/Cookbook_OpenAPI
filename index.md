@@ -26,4 +26,4 @@ Above we wrote 'yoghurt' but you can also spell this as 'yogurt'. We can use gre
 curl http://localhost:3000/recipes?ingredients='yog.*urt'
 ```
 
-[Explore the API -> ](API-spec-page)
+[Explore the API -> ](redoc.html)
