@@ -6,12 +6,14 @@ The cookbook_openAPI outlines a REST API for developers to use to create, store 
 
 ## Usage
 
-The YAML file can be viewed in the Swagger online editor: https://swagger.io/tools/swagger-editor/ or your preferred OpenAPI renderer. 
+The documentation can viewed in this repository's GitHub Pages: https://dew0011.github.io/Cookbook_OpenAPI/
+
+It features a landing page with a getting started guide and the OpenAPI spec rendered with Redoc.
 
 ## Motivation
 I created this documentation to get hands on experience in API documentation and explore REST API structure. This is a work in progress and is evolving as I learn more. 
 
-If you are also exploring this space, please feel free to use this as a starting place. There are many, many places where this documentation and the underlying API structure could be improved and built on. At the bottom I have given a list of some of the [fantastic resources](##Thank_you) I have used in putting this documentation together. 
+If you are also exploring this space, please feel free to use this as a starting place. There are many, many places where this documentation and the underlying API structure could be improved and built on. At the bottom I have given a list of some of the [fantastic resources](#thank-you) I have used in putting this documentation together. 
 
 ## Design Principles
 ### Endpoint layout
