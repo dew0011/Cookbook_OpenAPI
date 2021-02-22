@@ -1,12 +1,10 @@
-#  Cookbook Open-API Specification
-
 This mini-API gives you access to our database of recipes and lets you or your users create and curate your own collection. 
 
 ## The API has three main endpoints.
 
-- [**/recipes**](recipes-page) to search the database or add new recipes
-- [**/recipes/ingredients**](ingredients-page) to access the ingredients of a recipe
-- [**/recipes/preparation**](preparation-page) to access the preparation steps of a recipe
+- [**/recipes**](redoc.html#tag/recipes) to search the database or add new recipes
+- [**/recipes/ingredients**](redoc.html#tag/ingredients) to access the ingredients of a recipe
+- [**/recipes/preparation**](redoc.html#tag/preparation) to access the preparation steps of a recipe
 
 All of our endpoints can be tested in Postman: <br>
 [![Run in Postman](https://run.pstmn.io/button.svg)](https://app.getpostman.com/run-collection/28e76c71be48476b5a6b)
